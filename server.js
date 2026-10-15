@@ -99,7 +99,7 @@ wss.on('connection', (ws, req) => {
     try {
       const msg = JSON.parse(data.toString());
       console.log('[WS Inbound]', msg);
-      handleCommand(msg);
+      handleCommand(msg, ws);
     } catch (e) {
       console.warn('[WS] Invalid message:', data.toString());
     }
@@ -211,7 +211,7 @@ function broadcastTelemetry() {
 setInterval(broadcastTelemetry, 100);
 
 // Handle inbound commands from web clients (for simulation control)
-function handleCommand(msg) {
+function handleCommand(msg, ws) {
   if (!msg || !msg.cmd) return;
 
   switch (msg.cmd) {
@@ -248,6 +248,111 @@ function handleCommand(msg) {
     case 'CONFIG':
       // Config would be sent to ESP32 in real deployment
       console.log('[Config]', { pwm: msg.pwm, target_dist: msg.target_dist });
+      break;
+
+    // =============================================================================
+    // HARDWARE TEST COMMANDS (Opsi 2: Live Wiring & Hardware Tester)
+    // =============================================================================
+    case 'TEST_ULTRASONIC_LEFT':
+      console.log('[HW TEST] Ultrasonic LEFT - Trigger pulse on GPIO 13, read Echo GPIO 34');
+      // In real ESP32: send pulse, measure echo, return distance
+      ws.send(JSON.stringify({ 
+        type: 'test_result', 
+        test: 'ultrasonic_left', 
+        success: true, 
+        value: Math.round((4.8 + Math.random() * 1.5) * 10) / 10,
+        unit: 'cm',
+        pins: { trig: 13, echo: 34 },
+        message: 'Sensor Kiri OK - Jarak terbaca normal'
+      }));
+      break;
+
+    case 'TEST_ULTRASONIC_FRONT':
+      console.log('[HW TEST] Ultrasonic FRONT - Trigger pulse on GPIO 12, read Echo GPIO 35');
+      ws.send(JSON.stringify({ 
+        type: 'test_result', 
+        test: 'ultrasonic_front', 
+        success: true, 
+        value: Math.round((18.0 + Math.random() * 12.0) * 10) / 10,
+        unit: 'cm',
+        pins: { trig: 12, echo: 35 },
+        message: 'Sensor Depan OK - Jarak terbaca normal'
+      }));
+      break;
+
+    case 'TEST_ULTRASONIC_RIGHT':
+      console.log('[HW TEST] Ultrasonic RIGHT - Trigger pulse on GPIO 14, read Echo GPIO 32');
+      ws.send(JSON.stringify({ 
+        type: 'test_result', 
+        test: 'ultrasonic_right', 
+        success: true, 
+        value: Math.round((22.0 + Math.random() * 5.0) * 10) / 10,
+        unit: 'cm',
+        pins: { trig: 14, echo: 32 },
+        message: 'Sensor Kanan OK - Jarak terbaca normal'
+      }));
+      break;
+
+    case 'TEST_LINE_FOLLOWER':
+      console.log('[HW TEST] Line Follower TCRT5000 - Read GPIO 27');
+      ws.send(JSON.stringify({ 
+        type: 'test_result', 
+        test: 'line_follower', 
+        success: true, 
+        value: Math.random() > 0.5 ? 1 : 0,
+        unit: 'state',
+        pins: { out: 27 },
+        message: 'Line Follower OK - Logika terbaca: ' + (Math.random() > 0.5 ? 'HITAM (garis)' : 'PUTIH (bebas)')
+      }));
+      break;
+
+    case 'TEST_MOTOR_LEFT':
+      console.log('[HW TEST] Motor LEFT - DRV8833 IN1=GPIO18, IN2=GPIO19 (PWM)');
+      ws.send(JSON.stringify({ 
+        type: 'test_result', 
+        test: 'motor_left', 
+        success: true, 
+        value: 180,
+        unit: 'PWM',
+        pins: { in1: 18, in2: 19 },
+        message: 'Motor Kiri OK - PWM 180, arah MAJU'
+      }));
+      break;
+
+    case 'TEST_MOTOR_RIGHT':
+      console.log('[HW TEST] Motor RIGHT - DRV8833 IN3=GPIO21, IN4=GPIO22 (PWM)');
+      ws.send(JSON.stringify({ 
+        type: 'test_result', 
+        test: 'motor_right', 
+        success: true, 
+        value: 180,
+        unit: 'PWM',
+        pins: { in3: 21, in4: 22 },
+        message: 'Motor Kanan OK - PWM 180, arah MAJU'
+      }));
+      break;
+
+    case 'TEST_ALL':
+      console.log('[HW TEST] FULL HARDWARE SELF-TEST');
+      // Simulate sequential test with delay
+      const tests = ['ultrasonic_left', 'ultrasonic_front', 'ultrasonic_right', 'line_follower', 'motor_left', 'motor_right'];
+      let testIdx = 0;
+      const runNext = () => {
+        if (testIdx >= tests.length) {
+          ws.send(JSON.stringify({ 
+            type: 'test_result', 
+            test: 'all_complete', 
+            success: true, 
+            message: 'SELURUH HARDWARE BERHASIL DITEST ✓'
+          }));
+          return;
+        }
+        const t = tests[testIdx++];
+        // Send individual test command to trigger handler
+        handleCommand({ cmd: 'TEST_' + t.toUpperCase() }, ws);
+        setTimeout(runNext, 400);
+      };
+      runNext();
       break;
   }
 }

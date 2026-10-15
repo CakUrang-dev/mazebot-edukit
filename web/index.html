@@ -376,6 +376,124 @@
     .tab-content { display: none; }
     .tab-content.active { display: flex; flex-direction: column; gap: 12px; }
 
+    /* Interactive Schematic & Hardware Tester */
+    .schematic-box {
+      background: #090D16;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      padding: 6px;
+    }
+    .schematic-svg {
+      width: 100%;
+      height: auto;
+      max-height: 380px;
+      display: block;
+      user-select: none;
+      touch-action: manipulation;
+    }
+    .svg-node {
+      cursor: pointer;
+      transition: transform 0.15s ease, filter 0.15s ease, opacity 0.15s ease;
+    }
+    .svg-node:hover {
+      filter: brightness(1.25);
+    }
+    .svg-wire {
+      transition: stroke-width 0.2s ease, stroke 0.2s ease, opacity 0.2s ease;
+    }
+    .wire-active {
+      stroke-width: 3.5 !important;
+      filter: drop-shadow(0 0 6px currentColor);
+    }
+    .node-dimmed {
+      opacity: 0.3;
+    }
+    .filter-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .filter-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+      background: var(--bg-card-sub);
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .filter-pill.active {
+      background: #4F46E5;
+      color: #FFFFFF;
+      border-color: #6366F1;
+      box-shadow: 0 0 8px rgba(79, 70, 229, 0.4);
+    }
+    .diag-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .diag-card {
+      background: var(--bg-card-sub);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color 0.15s ease;
+    }
+    .diag-card.active-test {
+      border-color: #38BDF8;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+    }
+    .diag-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .diag-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: space-between;
+    }
+    .diag-log {
+      background: #090D16;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 10.5px;
+      line-height: 1.5;
+      color: #94A3B8;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+    .diag-log-entry {
+      margin-bottom: 2px;
+    }
+    .diag-log-time {
+      color: #64748B;
+    }
+    .diag-log-ok {
+      color: #34D399;
+      font-weight: 700;
+    }
+    .diag-log-val {
+      color: #38BDF8;
+      font-weight: 700;
+    }
+
     footer {
       text-align: center;
       font-size: 10px;
@@ -667,35 +785,303 @@
 
     <!-- TAB 2: HARDWARE & SCHEMATIC VIEW -->
     <div id="view-schematic" class="tab-content">
-          <div class="card">
-            <div class="card-title">
-              <span style="display: inline-flex; align-items: center; gap: 6px;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px; color: #38BDF8;" aria-hidden="true">
-                  <rect x="2" y="2" width="20" height="8" rx="2"/>
-                  <rect x="2" y="14" width="20" height="8" rx="2"/>
-                  <line x1="6" y1="10" x2="6" y2="14"/>
-                  <line x1="18" y1="10" x2="18" y2="14"/>
-                  <line x1="12" y1="10" x2="12" y2="14"/>
-                </svg>
-                Skematik & Rangkaian Pinout ESP32
-              </span>
-            </div>
-            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">
-              Desain minimalis, hemat biaya — ESP32 DevKit V1 mendorong 3× Ultrasonik + Line Follower + Dual Motor DRV8833 dalam satu PCB kompak:
-            </p>
+      <!-- Interactive Schematic Visualizer Card -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom: 4px;">
+          <span style="display: inline-flex; align-items: center; gap: 6px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px; color: #38BDF8;" aria-hidden="true">
+              <rect x="2" y="2" width="20" height="8" rx="2"/>
+              <rect x="2" y="14" width="20" height="8" rx="2"/>
+              <line x1="6" y1="10" x2="6" y2="14"/>
+              <line x1="18" y1="10" x2="18" y2="14"/>
+              <line x1="12" y1="10" x2="12" y2="14"/>
+            </svg>
+            Diagram Skematik & Jalur Pinout Interaktif
+          </span>
+        </div>
+        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+          Ketuk komponen pada diagram atau pilih filter di bawah untuk melihat rute kabel pinout ESP32 secara spesifik:
+        </p>
 
-        <div style="background: #1F2937; border-radius: 8px; padding: 10px; font-family: monospace; font-size: 11px; line-height: 1.6;">
-          <div style="color: #FBBF24; font-weight: 700;">// Pinout Aktuator DRV8833</div>
-          • Motor Kiri (IN1, IN2)  : GPIO 18, GPIO 19 (PWM)<br>
-          • Motor Kanan (IN3, IN4) : GPIO 21, GPIO 22 (PWM)<br>
-          <br>
-          <div style="color: #34D399; font-weight: 700;">// Pinout Sensor Jarak HC-SR04 (3x)</div>
-          • Ultrasonik Kiri  : Trig = 13, Echo = 34<br>
-          • Ultrasonik Depan : Trig = 12, Echo = 35<br>
-          • Ultrasonik Kanan : Trig = 14, Echo = 32<br>
-          <br>
-          <div style="color: #38BDF8; font-weight: 700;">// Sensor Garis Finish TCRT5000</div>
-          • Digital Out (DO) : GPIO 27 (Active LOW/HIGH)
+        <!-- Module Selection Pills -->
+        <div class="filter-pills">
+          <div class="filter-pill active" onclick="filterSchematic('all')">Semua Komponen</div>
+          <div class="filter-pill" onclick="filterSchematic('us_front')">Ultrasonik Depan</div>
+          <div class="filter-pill" onclick="filterSchematic('us_left')">Ultrasonik Kiri</div>
+          <div class="filter-pill" onclick="filterSchematic('us_right')">Ultrasonik Kanan</div>
+          <div class="filter-pill" onclick="filterSchematic('motors')">Dual Motor DRV8833</div>
+          <div class="filter-pill" onclick="filterSchematic('line')">Sensor Garis TCRT5000</div>
+        </div>
+
+        <!-- Interactive SVG Wiring Canvas -->
+        <div class="schematic-box">
+          <svg class="schematic-svg" viewBox="0 0 540 380" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="espGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#1E293B"/>
+                <stop offset="100%" stop-color="#0F172A"/>
+              </linearGradient>
+              <linearGradient id="modGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#334155"/>
+                <stop offset="100%" stop-color="#1E293B"/>
+              </linearGradient>
+              <filter id="glowGreen" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#10B981"/>
+              </filter>
+            </defs>
+
+            <!-- Background Grid Accent -->
+            <pattern id="diagGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <circle cx="2" cy="2" r="1" fill="#1E293B"/>
+            </pattern>
+            <rect width="540" height="380" fill="url(#diagGrid)"/>
+
+            <!-- ================= WIRING BUS TRACES ================= -->
+            <!-- Ultrasonic Left (Trig GPIO13: Amber, Echo GPIO34: Green) -->
+            <g id="wires-us_left" class="svg-wire-group">
+              <path class="svg-wire wire-us_left" d="M 85 80 L 85 180 L 190 180" stroke="#F59E0B" stroke-width="2" fill="none" stroke-dasharray="4 2"/>
+              <path class="svg-wire wire-us_left" d="M 125 80 L 125 160 L 190 160" stroke="#10B981" stroke-width="2" fill="none"/>
+            </g>
+
+            <!-- Ultrasonic Front (Trig GPIO12: Amber, Echo GPIO35: Green) -->
+            <g id="wires-us_front" class="svg-wire-group">
+              <path class="svg-wire wire-us_front" d="M 245 75 L 245 125" stroke="#F59E0B" stroke-width="2" fill="none" stroke-dasharray="4 2"/>
+              <path class="svg-wire wire-us_front" d="M 295 75 L 295 125" stroke="#10B981" stroke-width="2" fill="none"/>
+            </g>
+
+            <!-- Ultrasonic Right (Trig GPIO14: Amber, Echo GPIO32: Green) -->
+            <g id="wires-us_right" class="svg-wire-group">
+              <path class="svg-wire wire-us_right" d="M 420 80 L 420 170 L 350 170" stroke="#F59E0B" stroke-width="2" fill="none" stroke-dasharray="4 2"/>
+              <path class="svg-wire wire-us_right" d="M 460 80 L 460 190 L 350 190" stroke="#10B981" stroke-width="2" fill="none"/>
+            </g>
+
+            <!-- Line Follower TCRT5000 (DO GPIO27: Violet) -->
+            <g id="wires-line" class="svg-wire-group">
+              <path class="svg-wire wire-line" d="M 130 300 L 130 220 L 190 220" stroke="#A855F7" stroke-width="2.2" fill="none"/>
+            </g>
+
+            <!-- DRV8833 Motors (IN1 GPIO18, IN2 GPIO19, IN3 GPIO21, IN4 GPIO22: Cyan / Blue) -->
+            <g id="wires-motors" class="svg-wire-group">
+              <path class="svg-wire wire-motors" d="M 350 230 L 410 230 L 410 290" stroke="#38BDF8" stroke-width="2" fill="none"/>
+              <path class="svg-wire wire-motors" d="M 350 250 L 440 250 L 440 290" stroke="#60A5FA" stroke-width="2" fill="none"/>
+              <path class="svg-wire wire-motors" d="M 350 270 L 470 270 L 470 290" stroke="#818CF8" stroke-width="2" fill="none"/>
+            </g>
+
+            <!-- ================= CENTRAL ESP32 MODULE ================= -->
+            <g id="node-esp32" class="svg-node" onclick="filterSchematic('all')">
+              <rect x="190" y="125" width="160" height="165" rx="8" fill="url(#espGrad)" stroke="#475569" stroke-width="2"/>
+              <!-- Metal Shield -->
+              <rect x="215" y="145" width="110" height="65" rx="4" fill="#334155" stroke="#64748B" stroke-width="1"/>
+              <text x="270" y="172" fill="#E2E8F0" font-size="11" font-weight="bold" text-anchor="middle" font-family="monospace">ESP32 DevKit V1</text>
+              <text x="270" y="190" fill="#94A3B8" font-size="9" text-anchor="middle" font-family="monospace">Dual Core • WiFi/BLE</text>
+              
+              <!-- Pin Headers Left (Selected) -->
+              <circle cx="190" cy="160" r="3" fill="#10B981"/>
+              <text x="198" y="163" fill="#94A3B8" font-size="8" font-family="monospace">G34 (Echo-L)</text>
+              
+              <circle cx="190" cy="180" r="3" fill="#F59E0B"/>
+              <text x="198" y="183" fill="#94A3B8" font-size="8" font-family="monospace">G13 (Trig-L)</text>
+
+              <circle cx="190" cy="220" r="3" fill="#A855F7"/>
+              <text x="198" y="223" fill="#94A3B8" font-size="8" font-family="monospace">G27 (Line-DO)</text>
+
+              <!-- Pin Headers Top -->
+              <circle cx="245" cy="125" r="3" fill="#F59E0B"/>
+              <text x="245" y="137" fill="#94A3B8" font-size="8" text-anchor="middle" font-family="monospace">G12</text>
+
+              <circle cx="295" cy="125" r="3" fill="#10B981"/>
+              <text x="295" y="137" fill="#94A3B8" font-size="8" text-anchor="middle" font-family="monospace">G35</text>
+
+              <!-- Pin Headers Right -->
+              <circle cx="350" cy="170" r="3" fill="#F59E0B"/>
+              <text x="342" y="173" fill="#94A3B8" font-size="8" text-anchor="end" font-family="monospace">G14</text>
+
+              <circle cx="350" cy="190" r="3" fill="#10B981"/>
+              <text x="342" y="193" fill="#94A3B8" font-size="8" text-anchor="end" font-family="monospace">G32</text>
+
+              <circle cx="350" cy="230" r="3" fill="#38BDF8"/>
+              <text x="342" y="233" fill="#94A3B8" font-size="8" text-anchor="end" font-family="monospace">G18/19 (L)</text>
+
+              <circle cx="350" cy="250" r="3" fill="#818CF8"/>
+              <text x="342" y="253" fill="#94A3B8" font-size="8" text-anchor="end" font-family="monospace">G21/22 (R)</text>
+
+              <!-- Status LED -->
+              <circle cx="210" cy="265" r="4" fill="#3B82F6"/>
+              <text x="220" y="268" fill="#64748B" font-size="8" font-family="monospace">PWR / IO2</text>
+            </g>
+
+            <!-- ================= TOP LEFT: HC-SR04 KIRI ================= -->
+            <g id="node-us_left" class="svg-node" onclick="filterSchematic('us_left')">
+              <rect x="25" y="20" width="135" height="60" rx="6" fill="url(#modGrad)" stroke="#475569" stroke-width="1.5"/>
+              <circle cx="55" cy="50" r="14" fill="#0F172A" stroke="#94A3B8" stroke-width="1.5"/>
+              <circle cx="105" cy="50" r="14" fill="#0F172A" stroke="#94A3B8" stroke-width="1.5"/>
+              <text x="92" y="32" fill="#F1F5F9" font-size="9" font-weight="bold" text-anchor="middle">HC-SR04 KIRI</text>
+              <text x="85" y="74" fill="#F59E0B" font-size="7.5" font-family="monospace">T:13</text>
+              <text x="125" y="74" fill="#10B981" font-size="7.5" font-family="monospace">E:34</text>
+            </g>
+
+            <!-- ================= TOP CENTER: HC-SR04 DEPAN ================= -->
+            <g id="node-us_front" class="svg-node" onclick="filterSchematic('us_front')">
+              <rect x="202" y="15" width="135" height="60" rx="6" fill="url(#modGrad)" stroke="#475569" stroke-width="1.5"/>
+              <circle cx="232" cy="45" r="14" fill="#0F172A" stroke="#94A3B8" stroke-width="1.5"/>
+              <circle cx="282" cy="45" r="14" fill="#0F172A" stroke="#94A3B8" stroke-width="1.5"/>
+              <text x="270" y="27" fill="#F1F5F9" font-size="9" font-weight="bold" text-anchor="middle">HC-SR04 DEPAN</text>
+              <text x="245" y="69" fill="#F59E0B" font-size="7.5" font-family="monospace">T:12</text>
+              <text x="295" y="69" fill="#10B981" font-size="7.5" font-family="monospace">E:35</text>
+            </g>
+
+            <!-- ================= TOP RIGHT: HC-SR04 KANAN ================= -->
+            <g id="node-us_right" class="svg-node" onclick="filterSchematic('us_right')">
+              <rect x="380" y="20" width="135" height="60" rx="6" fill="url(#modGrad)" stroke="#475569" stroke-width="1.5"/>
+              <circle cx="410" cy="50" r="14" fill="#0F172A" stroke="#94A3B8" stroke-width="1.5"/>
+              <circle cx="460" cy="50" r="14" fill="#0F172A" stroke="#94A3B8" stroke-width="1.5"/>
+              <text x="447" y="32" fill="#F1F5F9" font-size="9" font-weight="bold" text-anchor="middle">HC-SR04 KANAN</text>
+              <text x="420" y="74" fill="#F59E0B" font-size="7.5" font-family="monospace">T:14</text>
+              <text x="460" y="74" fill="#10B981" font-size="7.5" font-family="monospace">E:32</text>
+            </g>
+
+            <!-- ================= BOTTOM LEFT: TCRT5000 ================= -->
+            <g id="node-line" class="svg-node" onclick="filterSchematic('line')">
+              <rect x="25" y="300" width="145" height="58" rx="6" fill="url(#modGrad)" stroke="#475569" stroke-width="1.5"/>
+              <circle cx="45" cy="329" r="6" fill="#3B82F6"/>
+              <circle cx="62" cy="329" r="6" fill="#000000" stroke="#3B82F6" stroke-width="1"/>
+              <text x="105" y="320" fill="#F1F5F9" font-size="9" font-weight="bold">TCRT5000 Line</text>
+              <text x="105" y="334" fill="#94A3B8" font-size="8">Deteksi Garis Finish</text>
+              <text x="105" y="347" fill="#A855F7" font-size="8" font-family="monospace">DO ➔ GPIO 27</text>
+            </g>
+
+            <!-- ================= BOTTOM RIGHT: DRV8833 DUAL MOTOR ================= -->
+            <g id="node-motors" class="svg-node" onclick="filterSchematic('motors')">
+              <rect x="370" y="290" width="150" height="70" rx="6" fill="url(#modGrad)" stroke="#475569" stroke-width="1.5"/>
+              <rect x="380" y="300" width="30" height="20" rx="3" fill="#1E293B" stroke="#64748B"/>
+              <text x="395" y="313" fill="#38BDF8" font-size="7.5" text-anchor="middle" font-weight="bold">DRV</text>
+              <text x="450" y="308" fill="#F1F5F9" font-size="9" font-weight="bold">DRV8833 Dual DC</text>
+              <text x="450" y="322" fill="#94A3B8" font-size="8">L: G18/19 • R: G21/22</text>
+              <text x="450" y="335" fill="#38BDF8" font-size="8" font-family="monospace">PWM 2-Phase Driver</text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Dynamic Selected Component Info -->
+        <div id="schematic-detail-card" style="margin-top: 10px; background: #111827; border: 1px solid var(--border); border-radius: 8px; padding: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <div id="detail-title" style="font-size: 12px; font-weight: 700; color: #38BDF8;">Semua Komponen Terkoneksi</div>
+            <span class="badge" id="detail-tag" style="background: #1F2937; color: #94A3B8; font-size: 10px;">Ringkasan Sistem</span>
+          </div>
+          <div id="detail-body" style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">
+            Sistem menggunakan mikrokontroler ESP32 DevKit V1 yang mengelola 3 modul ultrasonik HC-SR04 untuk navigasi dinding labirin (Wall-Following), 1 sensor TCRT5000 untuk deteksi garis stop/finish, dan modul dual motor DRV8833 dengan modulasi PWM.
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Hardware Tester & Diagnostic Deck (Opsi 2) -->
+      <div class="card">
+        <div class="diag-head" style="margin-bottom: 8px;">
+          <div class="card-title" style="margin-bottom: 0;">
+            <span style="display: inline-flex; align-items: center; gap: 6px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px; color: #10B981;" aria-hidden="true">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+              </svg>
+              Live Hardware Diagnostic Deck
+            </span>
+          </div>
+          <button class="btn btn-secondary" onclick="runFullSelfTest()" style="font-size: 11px; padding: 6px 10px; gap: 4px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 13px; height: 13px; color: #F59E0B;" aria-hidden="true">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            Auto Self-Test
+          </button>
+        </div>
+        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
+          Uji jalur kabel fisik dan respon modul secara langsung melalui perintah probe nirkabel ke firmware robot:
+        </p>
+
+        <!-- Diagnostic Items Grid -->
+        <div class="diag-grid">
+          <!-- 1. Ultrasonik Depan -->
+          <div class="diag-card" id="card-test-us_front">
+            <div class="diag-head">
+              <span style="font-weight: 700; font-size: 11.5px; color: #F1F5F9;">HC-SR04 Depan</span>
+              <span class="badge" id="badge-test-us_front" style="background: #1F2937; color: #94A3B8;">Standby</span>
+            </div>
+            <div class="diag-actions">
+              <span style="font-size: 10.5px; color: #64748B; font-family: monospace;">Trig: 12 • Echo: 35</span>
+              <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" onclick="runHwTest('TEST_ULTRASONIC_FRONT')">Ping Sensor</button>
+            </div>
+          </div>
+
+          <!-- 2. Ultrasonik Kiri -->
+          <div class="diag-card" id="card-test-us_left">
+            <div class="diag-head">
+              <span style="font-weight: 700; font-size: 11.5px; color: #F1F5F9;">HC-SR04 Kiri</span>
+              <span class="badge" id="badge-test-us_left" style="background: #1F2937; color: #94A3B8;">Standby</span>
+            </div>
+            <div class="diag-actions">
+              <span style="font-size: 10.5px; color: #64748B; font-family: monospace;">Trig: 13 • Echo: 34</span>
+              <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" onclick="runHwTest('TEST_ULTRASONIC_LEFT')">Ping Sensor</button>
+            </div>
+          </div>
+
+          <!-- 3. Ultrasonik Kanan -->
+          <div class="diag-card" id="card-test-us_right">
+            <div class="diag-head">
+              <span style="font-weight: 700; font-size: 11.5px; color: #F1F5F9;">HC-SR04 Kanan</span>
+              <span class="badge" id="badge-test-us_right" style="background: #1F2937; color: #94A3B8;">Standby</span>
+            </div>
+            <div class="diag-actions">
+              <span style="font-size: 10.5px; color: #64748B; font-family: monospace;">Trig: 14 • Echo: 32</span>
+              <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" onclick="runHwTest('TEST_ULTRASONIC_RIGHT')">Ping Sensor</button>
+            </div>
+          </div>
+
+          <!-- 4. Sensor Garis TCRT5000 -->
+          <div class="diag-card" id="card-test-line">
+            <div class="diag-head">
+              <span style="font-weight: 700; font-size: 11.5px; color: #F1F5F9;">TCRT5000 Line Tracker</span>
+              <span class="badge" id="badge-test-line" style="background: #1F2937; color: #94A3B8;">Standby</span>
+            </div>
+            <div class="diag-actions">
+              <span style="font-size: 10.5px; color: #64748B; font-family: monospace;">DO ➔ GPIO 27</span>
+              <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" onclick="runHwTest('TEST_LINE_FOLLOWER')">Cek Garis</button>
+            </div>
+          </div>
+
+          <!-- 5. Motor Driver Kiri -->
+          <div class="diag-card" id="card-test-motor_left">
+            <div class="diag-head">
+              <span style="font-weight: 700; font-size: 11.5px; color: #F1F5F9;">Motor Kiri (DRV8833)</span>
+              <span class="badge" id="badge-test-motor_left" style="background: #1F2937; color: #94A3B8;">Standby</span>
+            </div>
+            <div class="diag-actions">
+              <span style="font-size: 10.5px; color: #64748B; font-family: monospace;">IN1: 18 • IN2: 19</span>
+              <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" onclick="runHwTest('TEST_MOTOR_LEFT')">Pulse 0.5s</button>
+            </div>
+          </div>
+
+          <!-- 6. Motor Driver Kanan -->
+          <div class="diag-card" id="card-test-motor_right">
+            <div class="diag-head">
+              <span style="font-weight: 700; font-size: 11.5px; color: #F1F5F9;">Motor Kanan (DRV8833)</span>
+              <span class="badge" id="badge-test-motor_right" style="background: #1F2937; color: #94A3B8;">Standby</span>
+            </div>
+            <div class="diag-actions">
+              <span style="font-size: 10.5px; color: #64748B; font-family: monospace;">IN3: 21 • IN4: 22</span>
+              <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" onclick="runHwTest('TEST_MOTOR_RIGHT')">Pulse 0.5s</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-time Diagnostic Log Console -->
+        <div style="margin-top: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span style="font-size: 10px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em;">Console Respon Hardware</span>
+            <span style="font-size: 10px; color: #38BDF8; cursor: pointer;" onclick="clearDiagLog()">Bersihkan Log</span>
+          </div>
+          <div class="diag-log" id="diag-console-log">
+            <div class="diag-log-entry">
+              <span class="diag-log-time">[00:00:00]</span> Sistem siap. Tekan salah satu uji hardware di atas untuk memulai diagnostik.
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1040,6 +1426,189 @@
         }
       }, 800);
     });
+
+    /* ============================================================================
+       INTERACTIVE SCHEMATIC & HARDWARE TESTER LOGIC
+       ============================================================================ */
+    let activeSchematicFilter = 'all';
+    const schematicNodeMap = {
+      'all': ['node-esp32'],
+      'us_front': ['node-us_front', 'node-esp32'],
+      'us_left': ['node-us_left', 'node-esp32'],
+      'us_right': ['node-us_right', 'node-esp32'],
+      'line': ['node-line', 'node-esp32'],
+      'motors': ['node-motors', 'node-esp32']
+    };
+    const wireGroupMap = {
+      'all': ['wires-us_left', 'wires-us_front', 'wires-us_right', 'wires-line', 'wires-motors'],
+      'us_front': ['wires-us_front'],
+      'us_left': ['wires-us_left'],
+      'us_right': ['wires-us_right'],
+      'line': ['wires-line'],
+      'motors': ['wires-motors']
+    };
+    const detailContent = {
+      'all': {
+        title: 'Semua Komponen Terkoneksi',
+        tag: 'Ringkasan Sistem',
+        body: 'Sistem menggunakan mikrokontroler ESP32 DevKit V1 yang mengelola 3 modul ultrasonik HC-SR04 untuk navigasi dinding labirin (Wall-Following), 1 sensor TCRT5000 untuk deteksi garis stop/finish, dan modul dual motor DRV8833 dengan modulasi PWM.'
+      },
+      'us_front': {
+        title: 'Ultrasonik Depan (HC-SR04)',
+        tag: 'Sensor Jarak Dinding',
+        body: 'Pinout: Trig ➔ GPIO 12 (Output PWM pulsa 10µs), Echo ➔ GPIO 35 (Input pulsa balik).<br>Fungsi: Mengukur jarak dinding depan untuk kontrol kecepatan & pencegahan tabrakan.<br>Rentang efektif: 2 cm – 400 cm. Resolusi ~3 mm.'
+      },
+      'us_left': {
+        title: 'Ultrasonik Kiri (HC-SR04)',
+        tag: 'Sensor Wall-Follow',
+        body: 'Pinout: Trig ➔ GPIO 13 (Output), Echo ➔ GPIO 34 (Input).<br>Fungsi: Referensi utama algoritma Wall-Following (Left Hand Rule). Robot menjaga jarak ~5 cm dari dinding kiri.<br>GPIO 34 adalah input-only pin (ADC1_CH6).'
+      },
+      'us_right': {
+        title: 'Ultrasonik Kanan (HC-SR04)',
+        tag: 'Sensor Koreksi Jalan',
+        body: 'Pinout: Trig ➔ GPIO 14 (Output), Echo ➔ GPIO 32 (Input ADC1_CH4).<br>Fungsi: Deteksi dinding kanan untuk Koreksi & deteksi simpang T-junction.<br>Membantu menentukan L/S/R di persimpangan labirin.'
+      },
+      'line': {
+        title: 'TCRT5000 Line Tracker',
+        tag: 'Sensor Garis Finish',
+        body: 'Pinout: DO (Digital Out) ➔ GPIO 27 (Input).<br>Fungsi: Mendeteksi garis hitam finish/stop menggunakan cahaya IR reflected.<br>Logika: 0 = Putih (bebas), 1 = Hitam (garis terdeteksi).<br>Active LOW/HIGH tergantung modul breakout.'
+      },
+      'motors': {
+        title: 'Dual Motor Driver DRV8833',
+        tag: 'Aktuator Gerak',
+        body: 'Pinout:<br>• Motor Kiri: IN1=GPIO 18 (PWM), IN2=GPIO 19 (PWM)<br>• Motor Kanan: IN3=GPIO 21 (PWM), IN4=GPIO 22 (PWM)<br>Fungsi: H-bridge 2-channel, drive 2 motor DC terpisah.<br>Modulasi PWM 2-phase (Lock Anti-phase) untuk kontrol arah & kecepatan halus.'
+      }
+    };
+
+    function filterSchematic(filter) {
+      activeSchematicFilter = filter;
+
+      // Update filter pills
+      document.querySelectorAll('.filter-pill').forEach(el => {
+        el.classList.remove('active');
+        if (el.getAttribute('onclick')?.includes(filter) || 
+            (filter === 'all' && el.textContent === 'Semua Komponen')) {
+          el.classList.add('active');
+        }
+      });
+
+      // Dim/Show nodes
+      document.querySelectorAll('.svg-node').forEach(node => {
+        const id = node.id;
+        const isVisible = schematicNodeMap[filter].includes(id);
+        node.classList.toggle('node-dimmed', !isVisible);
+        if (isVisible) node.style.transform = 'scale(1.02)';
+        else node.style.transform = 'scale(1)';
+      });
+
+      // Highlight/Show wires
+      document.querySelectorAll('.svg-wire').forEach(wire => {
+        const groupId = wire.closest('g')?.id;
+        const isVisible = wireGroupMap[filter].includes(groupId);
+        wire.classList.toggle('wire-active', isVisible);
+        if (!isVisible) wire.style.opacity = '0.2';
+        else wire.style.opacity = '1';
+      });
+
+      // Update detail card
+      const d = detailContent[filter];
+      document.getElementById('detail-title').innerText = d.title;
+      document.getElementById('detail-tag').innerText = d.tag;
+      document.getElementById('detail-body').innerHTML = d.body;
+    }
+
+    function runHwTest(testCmd) {
+      const log = document.getElementById('diag-console-log');
+      const time = new Date().toLocaleTimeString('id-ID', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      
+      // Send command
+      sendPayload({ cmd: testCmd });
+      
+      // Update badge to testing
+      const badgeId = 'badge-test-' + testCmd.replace('TEST_', '').toLowerCase();
+      const cardId = 'card-' + badgeId.replace('badge-test-', 'test-');
+      const badge = document.getElementById(badgeId);
+      const card = document.getElementById(cardId);
+      if (badge) { badge.innerText = 'Menguji...'; badge.style.background = '#374151'; badge.style.color = '#FBBF24'; }
+      if (card) card.classList.add('active-test');
+
+      // Log sent command
+      log.insertAdjacentHTML('afterbegin', `<div class="diag-log-entry"><span class="diag-log-time">[${time}]</span> ▶ CMD: ${testCmd}</div>`);
+      
+      // Listen for test_result (handled in applyTelemetry-like way)
+      // We'll patch the message handler to capture test_result
+    }
+
+    function runFullSelfTest() {
+      const log = document.getElementById('diag-console-log');
+      const time = new Date().toLocaleTimeString('id-ID', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      
+      sendPayload({ cmd: 'TEST_ALL' });
+      
+      log.insertAdjacentHTML('afterbegin', `<div class="diag-log-entry"><span class="diag-log-time">[${time}]</span> ▶ <span style="color:#F59E0B;">AUTO SELF-TEST DIMULAI</span> — menguji seluruh hardware secara berurutan...</div>`);
+      
+      // Activate all test cards
+      document.querySelectorAll('.diag-card').forEach(card => card.classList.add('active-test'));
+      document.querySelectorAll('.badge[id^="badge-test-"]').forEach(b => { b.innerText = 'Menguji...'; b.style.background = '#374151'; b.style.color = '#FBBF24'; });
+    }
+
+    function clearDiagLog() {
+      document.getElementById('diag-console-log').innerHTML = `
+        <div class="diag-log-entry">
+          <span class="diag-log-time">[${new Date().toLocaleTimeString('id-ID', {hour12:false, hour:'2-digit',minute:'2-digit',second:'2-digit'})}]</span> Log dibersihkan. Siap untuk sesi diagnostik baru.
+        </div>`;
+    }
+
+    // Patch socket.onmessage to handle test_result
+    const originalOnMessage = socket?.onmessage;
+    function setupTestResultHandler() {
+      if (socket) {
+        socket.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            
+            // Handle test_result from server
+            if (data.type === 'test_result') {
+              const log = document.getElementById('diag-console-log');
+              const time = new Date().toLocaleTimeString('id-ID', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+              
+              const badgeId = 'badge-test-' + data.test;
+              const cardId = 'card-test-' + data.test;
+              const badge = document.getElementById(badgeId);
+              const card = document.getElementById(cardId);
+              
+              if (data.success) {
+                log.insertAdjacentHTML('afterbegin', `<div class="diag-log-entry"><span class="diag-log-time">[${time}]</span> <span class="diag-log-ok">✓ ${data.test.toUpperCase()}</span> — ${data.value} ${data.unit} — ${data.message}</div>`);
+                if (badge) { badge.innerText = 'OK'; badge.style.background = '#064E3B'; badge.style.color = '#34D399'; }
+                if (card) { card.classList.remove('active-test'); card.style.borderColor = '#10B981'; }
+              } else {
+                log.insertAdjacentHTML('afterbegin', `<div class="diag-log-entry"><span class="diag-log-time">[${time}]</span> <span style="color:#F87171;">✗ ${data.test.toUpperCase()}</span> — ${data.message || 'Gagal'}</div>`);
+                if (badge) { badge.innerText = 'GAGAL'; badge.style.background = '#7F1D1D'; badge.style.color = '#F87171'; }
+                if (card) { card.classList.remove('active-test'); card.style.borderColor = '#EF4444'; }
+              }
+              
+              if (data.test === 'all_complete') {
+                log.insertAdjacentHTML('afterbegin', `<div class="diag-log-entry"><span class="diag-log-time">[${time}]</span> <span style="color:#F59E0B; font-weight:bold;">■ SELURUH SELF-TEST SELESAI</span> — ${data.message}</div>`);
+                document.querySelectorAll('.diag-card').forEach(card => { card.classList.remove('active-test'); card.style.borderColor = 'var(--border)'; });
+                document.querySelectorAll('.badge[id^="badge-test-"]').forEach(b => { b.innerText = 'OK'; b.style.background = '#064E3B'; b.style.color = '#34D399'; });
+              }
+            } else {
+              applyTelemetry(data);
+            }
+          } catch (e) {
+            console.error('[WS] Parse error', e);
+          }
+        };
+      }
+    }
+
+    // Call after WS init
+    const originalInitWS = initWebSocket;
+    initWebSocket = function() {
+      originalInitWS.call(this);
+      // Override onmessage after socket created
+      setTimeout(setupTestResultHandler, 100);
+    };
   </script>
 </body>
 </html>
