@@ -376,18 +376,6 @@
     .tab-content { display: none; }
     .tab-content.active { display: flex; flex-direction: column; gap: 12px; }
 
-    .curriculum-chip {
-      display: inline-block;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-    .chip-sd { background: #065F46; color: #A7F3D0; }
-    .chip-smp { background: #1E40AF; color: #BFDBFE; }
-    .chip-sma { background: #6B21A8; color: #E9D5FF; }
-
     footer {
       text-align: center;
       font-size: 10px;
@@ -428,7 +416,6 @@
     <!-- View Navigation (Dashboard vs Learning Hub) -->
     <div class="nav-tabs">
       <div class="nav-tab active" onclick="switchView('dashboard')">IoT Dashboard</div>
-      <div class="nav-tab" onclick="switchView('curriculum')">Kurikulum & Materi</div>
       <div class="nav-tab" onclick="switchView('schematic')">Skematik & Hardware</div>
     </div>
 
@@ -678,66 +665,24 @@
 
     </div>
 
-    <!-- TAB 2: LEARNING & RESOURCE HUB VIEW -->
-    <div id="view-curriculum" class="tab-content">
-      <div class="card">
-        <div class="card-title">
-          <span style="display: inline-flex; align-items: center; gap: 6px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px; color: #10B981;" aria-hidden="true">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-              <path d="M6 12h12M6 16h8M6 8h12"/>
-            </svg>
-            Silabus Kurikulum MazeBot EduKit (13 Pertemuan)
-          </span>
-        </div>
-        
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <div style="background: var(--bg-card-sub); padding: 8px 10px; border-radius: 8px; border-left: 3px solid #10B981;">
-            <span class="curriculum-chip chip-sd">Tingkat SD (Pemula)</span>
-            <h4 style="font-size: 12px; font-weight: 700;">Pertemuan 1 - 3: Pengenalan Robotik & Kontrol Manual</h4>
-            <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
-              Mengenal aktuator motor DC, membaca logika sensor jarak aman vs bahaya, dan uji kendali D-Pad nirkabel melalui smartphone.
-            </p>
-          </div>
-
-          <div style="background: var(--bg-card-sub); padding: 8px 10px; border-radius: 8px; border-left: 3px solid #3B82F6;">
-            <span class="curriculum-chip chip-smp">Tingkat SMP (Menengah)</span>
-            <h4 style="font-size: 12px; font-weight: 700;">Pertemuan 4 - 7: Logika Wall-Follower & Kalibrasi Jarak</h4>
-            <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
-              Implementasi algoritma pengikut dinding kiri (Left Hand Rule), kalibrasi offset jarak 5 cm via PWM tuning, dan deteksi garis finish TCRT5000.
-            </p>
-          </div>
-
-          <div style="background: var(--bg-card-sub); padding: 8px 10px; border-radius: 8px; border-left: 3px solid #8B5CF6;">
-            <span class="curriculum-chip chip-sma">Tingkat SMA (Mahir)</span>
-            <h4 style="font-size: 12px; font-weight: 700;">Pertemuan 8 - 13: Maze Solving & Path Optimization (LSRB)</h4>
-            <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
-              Perekaman array simpang [L, S, R, U], algoritma reduksi jalan buntu (Dead-End Elimination), eksekusi Speed Run, dan evaluasi stopwatch digital.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 3: HARDWARE & SCHEMATIC VIEW -->
+    <!-- TAB 2: HARDWARE & SCHEMATIC VIEW -->
     <div id="view-schematic" class="tab-content">
-      <div class="card">
-        <div class="card-title">
-          <span style="display: inline-flex; align-items: center; gap: 6px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px; color: #38BDF8;" aria-hidden="true">
-              <rect x="2" y="2" width="20" height="8" rx="2"/>
-              <rect x="2" y="14" width="20" height="8" rx="2"/>
-              <line x1="6" y1="10" x2="6" y2="14"/>
-              <line x1="18" y1="10" x2="18" y2="14"/>
-              <line x1="12" y1="10" x2="12" y2="14"/>
-            </svg>
-            Skematik & Rangkaian Pinout ESP32
-          </span>
-        </div>
-        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">
-          Rancangan rangkaian biaya rendah (RAB &lt; Rp300.000,-) menggunakan ESP32 DevKit V1:
-        </p>
+          <div class="card">
+            <div class="card-title">
+              <span style="display: inline-flex; align-items: center; gap: 6px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width: 15px; height: 15px; color: #38BDF8;" aria-hidden="true">
+                  <rect x="2" y="2" width="20" height="8" rx="2"/>
+                  <rect x="2" y="14" width="20" height="8" rx="2"/>
+                  <line x1="6" y1="10" x2="6" y2="14"/>
+                  <line x1="18" y1="10" x2="18" y2="14"/>
+                  <line x1="12" y1="10" x2="12" y2="14"/>
+                </svg>
+                Skematik & Rangkaian Pinout ESP32
+              </span>
+            </div>
+            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">
+              Desain minimalis, hemat biaya — ESP32 DevKit V1 mendorong 3× Ultrasonik + Line Follower + Dual Motor DRV8833 dalam satu PCB kompak:
+            </p>
 
         <div style="background: #1F2937; border-radius: 8px; padding: 10px; font-family: monospace; font-size: 11px; line-height: 1.6;">
           <div style="color: #FBBF24; font-weight: 700;">// Pinout Aktuator DRV8833</div>
@@ -783,8 +728,7 @@
       document.getElementById('view-' + viewName).classList.add('active');
       const tabs = document.querySelectorAll('.nav-tab');
       if (viewName === 'dashboard') tabs[0].classList.add('active');
-      if (viewName === 'curriculum') tabs[1].classList.add('active');
-      if (viewName === 'schematic') tabs[2].classList.add('active');
+      if (viewName === 'schematic') tabs[1].classList.add('active');
     }
 
     /* WebSocket Connection Handling */
