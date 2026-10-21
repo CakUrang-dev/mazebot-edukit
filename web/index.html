@@ -1100,6 +1100,8 @@
     /* State Management */
     let socket = null;
     let simulationMode = false;
+    let restMode = false;
+    let restPollInterval = null;
     let simInterval = null;
     let robotState = {
       status: "IDLE",
@@ -1107,6 +1109,18 @@
       sensors: { left_cm: 25.0, front_cm: 30.0, right_cm: 5.0, line: 0 },
       maze: { grid_count: 0, raw_array: [], optimized_array: [] },
       config: { pwm: 180, target_dist: 5.0 }
+    };
+    
+    // ESP32 REST API Configuration
+    const ESP32_CONFIG = {
+      baseUrl: 'http://192.168.4.1',  // Default SoftAP IP
+      endpoints: {
+        data: '/api/data',
+        drive: '/api/drive',
+        stop: '/api/stop',
+        save: '/api/save'
+      },
+      pollIntervalMs: 200  // 5 Hz polling
     };
 
     /* Switch Tabs */
@@ -1151,17 +1165,56 @@
         };
 
         socket.onclose = () => {
-          console.log('[WS] Disconnected');
-          updateBadge('offline', 'OFFLINE');
-          // Reconnect attempt after 3s
-          setTimeout(() => {
-            if (!simulationMode) initWebSocket();
-          }, 3000);
+          console.log('[WS] Disconnected, trying HTTP REST Fallback');
+          updateBadge('reconnect', 'TRY REST API...');
+          
+          // Test REST API connectivity
+          fetch(`${ESP32_CONFIG.baseUrl}${ESP32_CONFIG.endpoints.data}`)
+            .then(res => res.json())
+            .then(data => {
+              console.log('[REST] Connected to ESP32 API!');
+              restMode = true;
+              updateBadge('online', 'ESP32 (REST)');
+              startRestPolling();
+            })
+            .catch(() => {
+              restMode = false;
+              updateBadge('offline', 'OFFLINE');
+              setTimeout(() => {
+                if (!simulationMode && !restMode) initWebSocket();
+              }, 3000);
+            });
         };
       } catch (err) {
         updateBadge('offline', 'SIM ONLY');
         setSimulation(true);
       }
+    }
+
+    function startRestPolling() {
+      if (restPollInterval) clearInterval(restPollInterval);
+      restPollInterval = setInterval(() => {
+        if (!restMode) return;
+        fetch(`${ESP32_CONFIG.baseUrl}${ESP32_CONFIG.endpoints.data}`)
+          .then(res => res.json())
+          .then(data => {
+            // Map ESP32 response format ke telemetry format
+            const mapped = {
+              status: data.mode || "IDLE",
+              sensors: {
+                left_cm: data.kiri !== null ? data.kiri : 0,
+                front_cm: data.depan !== null ? data.depan : 0,
+                right_cm: data.kanan !== null ? data.kanan : 0,
+                line: 0
+              }
+            };
+            applyTelemetry(mapped);
+          })
+          .catch(e => {
+            console.warn('[REST Poll Error]', e);
+            updateBadge('offline', 'DISCONNECTED');
+          });
+      }, ESP32_CONFIG.pollIntervalMs);
     }
 
     function updateBadge(status, text) {
@@ -1178,14 +1231,61 @@
 
       if (simulationMode) {
         handleSimCommand(payload);
+      } else if (restMode) {
+        handleRestCommand(cmd);
       }
     }
 
     function sendDrive(dir) {
       const payload = { cmd: "DRIVE", dir: dir };
       sendPayload(payload);
+      
       if (simulationMode) {
         console.log('[SIM] Drive command:', dir);
+      } else if (restMode) {
+        handleRestDrive(dir);
+      }
+    }
+
+    function handleRestCommand(cmd) {
+      const pwm = parseInt(document.getElementById('pwm-slider').value) || 200;
+      if (cmd === 'START_MAPPING') {
+        fetch(`${ESP32_CONFIG.baseUrl}${ESP32_CONFIG.endpoints.drive}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `mode=maju&l=${pwm}&r=${pwm}`
+        }).catch(e => console.error('[REST Error]', e));
+      } else if (cmd === 'ESTOP') {
+        fetch(`${ESP32_CONFIG.baseUrl}${ESP32_CONFIG.endpoints.stop}`, { method: 'POST' })
+          .catch(e => console.error('[REST Error]', e));
+      } else if (cmd === 'RESET') {
+        fetch(`${ESP32_CONFIG.baseUrl}${ESP32_CONFIG.endpoints.stop}`, { method: 'POST' })
+          .catch(e => console.error('[REST Error]', e));
+      }
+    }
+
+    function handleRestDrive(dir) {
+      const pwm = parseInt(document.getElementById('pwm-slider').value) || 200;
+      let mode = 'stop';
+      let l = pwm, r = pwm;
+
+      switch(dir) {
+        case 'FORWARD': mode = 'maju'; break;
+        case 'BACKWARD': mode = 'mundur'; break;
+        case 'LEFT': mode = 'belok_kiri'; break;
+        case 'RIGHT': mode = 'belok_kanan'; break;
+        case 'STOP': mode = 'stop'; break;
+      }
+
+      if (mode === 'stop') {
+        fetch(`${ESP32_CONFIG.baseUrl}${ESP32_CONFIG.endpoints.stop}`, { method: 'POST' })
+          .catch(e => console.error('[REST Error]', e));
+      } else {
+        fetch(`${ESP32_CONFIG.baseUrl}${ESP32_CONFIG.endpoints.drive}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `mode=${mode}&l=${l}&r=${r}`
+        }).catch(e => console.error('[REST Error]', e));
       }
     }
 
@@ -1194,7 +1294,17 @@
       const dist = parseFloat(document.getElementById('dist-slider').value) / 10.0;
       const payload = { cmd: "CONFIG", pwm: pwm, target_dist: dist };
       sendPayload(payload);
-      alert(`Pengaturan disimpan ke NVS: PWM=${pwm}, Target Dinding=${dist} cm`);
+
+      if (restMode) {
+        fetch(`${ESP32_CONFIG.baseUrl}${ESP32_CONFIG.endpoints.save}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `l=${pwm}&r=${pwm}`
+        }).then(() => alert(`Kalibrasi PWM=${pwm} berhasil disimpan ke NVS ESP32!`))
+          .catch(e => alert(`Gagal simpan ke ESP32: ${e}`));
+      } else {
+        alert(`Pengaturan disimpan ke NVS: PWM=${pwm}, Target Dinding=${dist} cm`);
+      }
     }
 
     function sendPayload(obj) {
