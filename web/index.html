@@ -837,19 +837,19 @@
             <rect width="540" height="380" fill="url(#diagGrid)"/>
 
             <!-- ================= WIRING BUS TRACES ================= -->
-            <!-- Ultrasonic Left (Trig GPIO13: Amber, Echo GPIO34: Green) -->
+            <!-- Ultrasonic Kiri (Trig GPIO19: Amber, Echo GPIO18: Green) -->
             <g id="wires-us_left" class="svg-wire-group">
               <path class="svg-wire wire-us_left" d="M 85 80 L 85 180 L 190 180" stroke="#F59E0B" stroke-width="2" fill="none" stroke-dasharray="4 2"/>
               <path class="svg-wire wire-us_left" d="M 125 80 L 125 160 L 190 160" stroke="#10B981" stroke-width="2" fill="none"/>
             </g>
 
-            <!-- Ultrasonic Front (Trig GPIO12: Amber, Echo GPIO35: Green) -->
+            <!-- Ultrasonic Depan (Trig GPIO4: Amber, Echo GPIO17: Green) -->
             <g id="wires-us_front" class="svg-wire-group">
               <path class="svg-wire wire-us_front" d="M 245 75 L 245 125" stroke="#F59E0B" stroke-width="2" fill="none" stroke-dasharray="4 2"/>
               <path class="svg-wire wire-us_front" d="M 295 75 L 295 125" stroke="#10B981" stroke-width="2" fill="none"/>
             </g>
 
-            <!-- Ultrasonic Right (Trig GPIO14: Amber, Echo GPIO32: Green) -->
+            <!-- Ultrasonic Kanan (Trig GPIO14: Amber, Echo GPIO13: Green) -->
             <g id="wires-us_right" class="svg-wire-group">
               <path class="svg-wire wire-us_right" d="M 420 80 L 420 170 L 350 170" stroke="#F59E0B" stroke-width="2" fill="none" stroke-dasharray="4 2"/>
               <path class="svg-wire wire-us_right" d="M 460 80 L 460 190 L 350 190" stroke="#10B981" stroke-width="2" fill="none"/>
@@ -860,7 +860,7 @@
               <path class="svg-wire wire-line" d="M 130 300 L 130 220 L 190 220" stroke="#A855F7" stroke-width="2.2" fill="none"/>
             </g>
 
-            <!-- DRV8833 Motors (IN1 GPIO18, IN2 GPIO19, IN3 GPIO21, IN4 GPIO22: Cyan / Blue) -->
+            <!-- DRV8833 Motor Kiri (AIN1 GPIO27, AIN2 GPIO26) dan Kanan (BIN1 GPIO25, BIN2 GPIO33) + STBY GPIO23 -->
             <g id="wires-motors" class="svg-wire-group">
               <path class="svg-wire wire-motors" d="M 350 230 L 410 230 L 410 290" stroke="#38BDF8" stroke-width="2" fill="none"/>
               <path class="svg-wire wire-motors" d="M 350 250 L 440 250 L 440 290" stroke="#60A5FA" stroke-width="2" fill="none"/>
@@ -877,33 +877,36 @@
               
               <!-- Pin Headers Left (Selected) -->
               <circle cx="190" cy="160" r="3" fill="#10B981"/>
-              <text x="198" y="163" fill="#94A3B8" font-size="8" font-family="monospace">G34 (Echo-L)</text>
+              <text x="198" y="163" fill="#94A3B8" font-size="8" font-family="monospace">G18 (Echo-L)</text>
               
               <circle cx="190" cy="180" r="3" fill="#F59E0B"/>
-              <text x="198" y="183" fill="#94A3B8" font-size="8" font-family="monospace">G13 (Trig-L)</text>
+              <text x="198" y="183" fill="#94A3B8" font-size="8" font-family="monospace">G19 (Trig-L)</text>
 
               <circle cx="190" cy="220" r="3" fill="#A855F7"/>
               <text x="198" y="223" fill="#94A3B8" font-size="8" font-family="monospace">G27 (Line-DO)</text>
 
               <!-- Pin Headers Top -->
               <circle cx="245" cy="125" r="3" fill="#F59E0B"/>
-              <text x="245" y="137" fill="#94A3B8" font-size="8" text-anchor="middle" font-family="monospace">G12</text>
+              <text x="245" y="137" fill="#94A3B8" font-size="8" text-anchor="middle" font-family="monospace">G4</text>
 
               <circle cx="295" cy="125" r="3" fill="#10B981"/>
-              <text x="295" y="137" fill="#94A3B8" font-size="8" text-anchor="middle" font-family="monospace">G35</text>
+              <text x="295" y="137" fill="#94A3B8" font-size="8" text-anchor="middle" font-family="monospace">G17</text>
 
               <!-- Pin Headers Right -->
               <circle cx="350" cy="170" r="3" fill="#F59E0B"/>
               <text x="342" y="173" fill="#94A3B8" font-size="8" text-anchor="end" font-family="monospace">G14</text>
 
               <circle cx="350" cy="190" r="3" fill="#10B981"/>
-              <text x="342" y="193" fill="#94A3B8" font-size="8" text-anchor="end" font-family="monospace">G32</text>
+              <text x="342" y="193" fill="#94A3B8" font-size="8" text-anchor="end" font-family="monospace">G13</text>
 
               <circle cx="350" cy="230" r="3" fill="#38BDF8"/>
-              <text x="342" y="233" fill="#94A3B8" font-size="8" text-anchor="end" font-family="monospace">G18/19 (L)</text>
+              <text x="342" y="233" fill="#94A3B8" font-size="8" text-anchor="end" font-family="monospace">G27/26 (L)</text>
 
               <circle cx="350" cy="250" r="3" fill="#818CF8"/>
-              <text x="342" y="253" fill="#94A3B8" font-size="8" text-anchor="end" font-family="monospace">G21/22 (R)</text>
+              <text x="342" y="253" fill="#94A3B8" font-size="8" text-anchor="end" font-family="monospace">G25/33 (R)</text>
+
+              <circle cx="350" cy="270" r="3" fill="#F59E0B"/>
+              <text x="342" y="273" fill="#94A3B8" font-size="8" text-anchor="end" font-family="monospace">G23 (STBY)</text>
 
               <!-- Status LED -->
               <circle cx="210" cy="265" r="4" fill="#3B82F6"/>
@@ -916,8 +919,8 @@
               <circle cx="55" cy="50" r="14" fill="#0F172A" stroke="#94A3B8" stroke-width="1.5"/>
               <circle cx="105" cy="50" r="14" fill="#0F172A" stroke="#94A3B8" stroke-width="1.5"/>
               <text x="92" y="32" fill="#F1F5F9" font-size="9" font-weight="bold" text-anchor="middle">HC-SR04 KIRI</text>
-              <text x="85" y="74" fill="#F59E0B" font-size="7.5" font-family="monospace">T:13</text>
-              <text x="125" y="74" fill="#10B981" font-size="7.5" font-family="monospace">E:34</text>
+              <text x="55" y="74" fill="#F59E0B" font-size="7.5" font-family="monospace" text-anchor="middle">T:19</text>
+              <text x="105" y="74" fill="#10B981" font-size="7.5" font-family="monospace" text-anchor="middle">E:18</text>
             </g>
 
             <!-- ================= TOP CENTER: HC-SR04 DEPAN ================= -->
@@ -926,8 +929,8 @@
               <circle cx="232" cy="45" r="14" fill="#0F172A" stroke="#94A3B8" stroke-width="1.5"/>
               <circle cx="282" cy="45" r="14" fill="#0F172A" stroke="#94A3B8" stroke-width="1.5"/>
               <text x="270" y="27" fill="#F1F5F9" font-size="9" font-weight="bold" text-anchor="middle">HC-SR04 DEPAN</text>
-              <text x="245" y="69" fill="#F59E0B" font-size="7.5" font-family="monospace">T:12</text>
-              <text x="295" y="69" fill="#10B981" font-size="7.5" font-family="monospace">E:35</text>
+              <text x="232" y="69" fill="#F59E0B" font-size="7.5" font-family="monospace" text-anchor="middle">T:4</text>
+              <text x="282" y="69" fill="#10B981" font-size="7.5" font-family="monospace" text-anchor="middle">E:17</text>
             </g>
 
             <!-- ================= TOP RIGHT: HC-SR04 KANAN ================= -->
@@ -936,8 +939,8 @@
               <circle cx="410" cy="50" r="14" fill="#0F172A" stroke="#94A3B8" stroke-width="1.5"/>
               <circle cx="460" cy="50" r="14" fill="#0F172A" stroke="#94A3B8" stroke-width="1.5"/>
               <text x="447" y="32" fill="#F1F5F9" font-size="9" font-weight="bold" text-anchor="middle">HC-SR04 KANAN</text>
-              <text x="420" y="74" fill="#F59E0B" font-size="7.5" font-family="monospace">T:14</text>
-              <text x="460" y="74" fill="#10B981" font-size="7.5" font-family="monospace">E:32</text>
+              <text x="410" y="74" fill="#F59E0B" font-size="7.5" font-family="monospace" text-anchor="middle">T:14</text>
+              <text x="460" y="74" fill="#10B981" font-size="7.5" font-family="monospace" text-anchor="middle">E:13</text>
             </g>
 
             <!-- ================= BOTTOM LEFT: TCRT5000 ================= -->
@@ -956,8 +959,8 @@
               <rect x="380" y="300" width="30" height="20" rx="3" fill="#1E293B" stroke="#64748B"/>
               <text x="395" y="313" fill="#38BDF8" font-size="7.5" text-anchor="middle" font-weight="bold">DRV</text>
               <text x="450" y="308" fill="#F1F5F9" font-size="9" font-weight="bold">DRV8833 Dual DC</text>
-              <text x="450" y="322" fill="#94A3B8" font-size="8">L: G18/19 • R: G21/22</text>
-              <text x="450" y="335" fill="#38BDF8" font-size="8" font-family="monospace">PWM 2-Phase Driver</text>
+              <text x="450" y="322" fill="#94A3B8" font-size="8">L: G27/26 • R: G25/33</text>
+              <text x="450" y="335" fill="#38BDF8" font-size="8" font-family="monospace">STBY: G23 • PWM 18kHz</text>
             </g>
           </svg>
         </div>
@@ -1005,7 +1008,7 @@
               <span class="badge" id="badge-test-us_front" style="background: #1F2937; color: #94A3B8;">Standby</span>
             </div>
             <div class="diag-actions">
-              <span style="font-size: 10.5px; color: #64748B; font-family: monospace;">Trig: 12 • Echo: 35</span>
+              <span style="font-size: 10.5px; color: #64748B; font-family: monospace;">Trig: 4 • Echo: 17</span>
               <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" onclick="runHwTest('TEST_ULTRASONIC_FRONT')">Ping Sensor</button>
             </div>
           </div>
@@ -1017,7 +1020,7 @@
               <span class="badge" id="badge-test-us_left" style="background: #1F2937; color: #94A3B8;">Standby</span>
             </div>
             <div class="diag-actions">
-              <span style="font-size: 10.5px; color: #64748B; font-family: monospace;">Trig: 13 • Echo: 34</span>
+              <span style="font-size: 10.5px; color: #64748B; font-family: monospace;">Trig: 19 • Echo: 18</span>
               <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" onclick="runHwTest('TEST_ULTRASONIC_LEFT')">Ping Sensor</button>
             </div>
           </div>
@@ -1029,7 +1032,7 @@
               <span class="badge" id="badge-test-us_right" style="background: #1F2937; color: #94A3B8;">Standby</span>
             </div>
             <div class="diag-actions">
-              <span style="font-size: 10.5px; color: #64748B; font-family: monospace;">Trig: 14 • Echo: 32</span>
+              <span style="font-size: 10.5px; color: #64748B; font-family: monospace;">Trig: 14 • Echo: 13</span>
               <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" onclick="runHwTest('TEST_ULTRASONIC_RIGHT')">Ping Sensor</button>
             </div>
           </div>
@@ -1053,7 +1056,7 @@
               <span class="badge" id="badge-test-motor_left" style="background: #1F2937; color: #94A3B8;">Standby</span>
             </div>
             <div class="diag-actions">
-              <span style="font-size: 10.5px; color: #64748B; font-family: monospace;">IN1: 18 • IN2: 19</span>
+              <span style="font-size: 10.5px; color: #64748B; font-family: monospace;">AIN1: 27 • AIN2: 26</span>
               <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" onclick="runHwTest('TEST_MOTOR_LEFT')">Pulse 0.5s</button>
             </div>
           </div>
@@ -1065,7 +1068,7 @@
               <span class="badge" id="badge-test-motor_right" style="background: #1F2937; color: #94A3B8;">Standby</span>
             </div>
             <div class="diag-actions">
-              <span style="font-size: 10.5px; color: #64748B; font-family: monospace;">IN3: 21 • IN4: 22</span>
+              <span style="font-size: 10.5px; color: #64748B; font-family: monospace;">BIN1: 25 • BIN2: 33 (STBY 23)</span>
               <button class="btn btn-secondary" style="font-size: 11px; padding: 4px 10px;" onclick="runHwTest('TEST_MOTOR_RIGHT')">Pulse 0.5s</button>
             </div>
           </div>
@@ -1456,27 +1459,27 @@
       'us_front': {
         title: 'Ultrasonik Depan (HC-SR04)',
         tag: 'Sensor Jarak Dinding',
-        body: 'Pinout: Trig ➔ GPIO 12 (Output PWM pulsa 10µs), Echo ➔ GPIO 35 (Input pulsa balik).<br>Fungsi: Mengukur jarak dinding depan untuk kontrol kecepatan & pencegahan tabrakan.<br>Rentang efektif: 2 cm – 400 cm. Resolusi ~3 mm.'
+        body: 'Pinout: Trig ➔ GPIO 4 (Output), Echo ➔ GPIO 17 (Input via Interrupt echoISR).<br>Fungsi: Mengukur jarak dinding depan untuk kontrol kecepatan & pencegahan tabrakan.<br>Rentang efektif: 2 cm – 400 cm. Kalibrasi sensor 10.0 / 9.1.'
       },
       'us_left': {
         title: 'Ultrasonik Kiri (HC-SR04)',
         tag: 'Sensor Wall-Follow',
-        body: 'Pinout: Trig ➔ GPIO 13 (Output), Echo ➔ GPIO 34 (Input).<br>Fungsi: Referensi utama algoritma Wall-Following (Left Hand Rule). Robot menjaga jarak ~5 cm dari dinding kiri.<br>GPIO 34 adalah input-only pin (ADC1_CH6).'
+        body: 'Pinout: Trig ➔ GPIO 19 (Output), Echo ➔ GPIO 18 (Input via Interrupt echoISR).<br>Fungsi: Referensi utama algoritma Wall-Following (Left Hand Rule). Robot menjaga jarak ~5 cm dari dinding kiri.'
       },
       'us_right': {
         title: 'Ultrasonik Kanan (HC-SR04)',
         tag: 'Sensor Koreksi Jalan',
-        body: 'Pinout: Trig ➔ GPIO 14 (Output), Echo ➔ GPIO 32 (Input ADC1_CH4).<br>Fungsi: Deteksi dinding kanan untuk Koreksi & deteksi simpang T-junction.<br>Membantu menentukan L/S/R di persimpangan labirin.'
+        body: 'Pinout: Trig ➔ GPIO 14 (Output), Echo ➔ GPIO 13 (Input via Interrupt echoISR).<br>Fungsi: Deteksi dinding kanan untuk koreksi & deteksi persimpangan labirin.'
       },
       'line': {
         title: 'TCRT5000 Line Tracker',
         tag: 'Sensor Garis Finish',
-        body: 'Pinout: DO (Digital Out) ➔ GPIO 27 (Input).<br>Fungsi: Mendeteksi garis hitam finish/stop menggunakan cahaya IR reflected.<br>Logika: 0 = Putih (bebas), 1 = Hitam (garis terdeteksi).<br>Active LOW/HIGH tergantung modul breakout.'
+        body: 'Pinout: DO (Digital Out) ➔ GPIO 27 (Input).<br>Fungsi: Mendeteksi garis hitam finish/stop menggunakan refleksi sinar inframerah.<br>Logika: 0 = Jalur Putih, 1 = Garis Hitam.'
       },
       'motors': {
         title: 'Dual Motor Driver DRV8833',
         tag: 'Aktuator Gerak',
-        body: 'Pinout:<br>• Motor Kiri: IN1=GPIO 18 (PWM), IN2=GPIO 19 (PWM)<br>• Motor Kanan: IN3=GPIO 21 (PWM), IN4=GPIO 22 (PWM)<br>Fungsi: H-bridge 2-channel, drive 2 motor DC terpisah.<br>Modulasi PWM 2-phase (Lock Anti-phase) untuk kontrol arah & kecepatan halus.'
+        body: 'Pinout:<br>• Motor Kiri: AIN1=GPIO 27, AIN2=GPIO 26 (PWM 18kHz)<br>• Motor Kanan: BIN1=GPIO 25, BIN2=GPIO 33 (PWM 18kHz)<br>• Standby: STBY=GPIO 23 (Active HIGH, auto-sleep saat STOP)<br>Fungsi: H-bridge 2-channel, drive 2 motor DC terpisah dengan soft-transition & fail-safe 650ms.'
       }
     };
 

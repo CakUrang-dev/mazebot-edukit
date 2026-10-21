@@ -252,43 +252,43 @@ function handleCommand(msg, ws) {
 
     // =============================================================================
     // HARDWARE TEST COMMANDS (Opsi 2: Live Wiring & Hardware Tester)
+    // Sesuai Firmware Maze_Solver (config.h)
     // =============================================================================
     case 'TEST_ULTRASONIC_LEFT':
-      console.log('[HW TEST] Ultrasonic LEFT - Trigger pulse on GPIO 13, read Echo GPIO 34');
-      // In real ESP32: send pulse, measure echo, return distance
+      console.log('[HW TEST] Ultrasonic LEFT - Trig: GPIO 19, Echo: GPIO 18');
       ws.send(JSON.stringify({ 
         type: 'test_result', 
         test: 'ultrasonic_left', 
         success: true, 
         value: Math.round((4.8 + Math.random() * 1.5) * 10) / 10,
         unit: 'cm',
-        pins: { trig: 13, echo: 34 },
+        pins: { trig: 19, echo: 18 },
         message: 'Sensor Kiri OK - Jarak terbaca normal'
       }));
       break;
 
     case 'TEST_ULTRASONIC_FRONT':
-      console.log('[HW TEST] Ultrasonic FRONT - Trigger pulse on GPIO 12, read Echo GPIO 35');
+      console.log('[HW TEST] Ultrasonic FRONT - Trig: GPIO 4, Echo: GPIO 17');
       ws.send(JSON.stringify({ 
         type: 'test_result', 
         test: 'ultrasonic_front', 
         success: true, 
         value: Math.round((18.0 + Math.random() * 12.0) * 10) / 10,
         unit: 'cm',
-        pins: { trig: 12, echo: 35 },
+        pins: { trig: 4, echo: 17 },
         message: 'Sensor Depan OK - Jarak terbaca normal'
       }));
       break;
 
     case 'TEST_ULTRASONIC_RIGHT':
-      console.log('[HW TEST] Ultrasonic RIGHT - Trigger pulse on GPIO 14, read Echo GPIO 32');
+      console.log('[HW TEST] Ultrasonic RIGHT - Trig: GPIO 14, Echo: GPIO 13');
       ws.send(JSON.stringify({ 
         type: 'test_result', 
         test: 'ultrasonic_right', 
         success: true, 
         value: Math.round((22.0 + Math.random() * 5.0) * 10) / 10,
         unit: 'cm',
-        pins: { trig: 14, echo: 32 },
+        pins: { trig: 14, echo: 13 },
         message: 'Sensor Kanan OK - Jarak terbaca normal'
       }));
       break;
@@ -307,27 +307,27 @@ function handleCommand(msg, ws) {
       break;
 
     case 'TEST_MOTOR_LEFT':
-      console.log('[HW TEST] Motor LEFT - DRV8833 IN1=GPIO18, IN2=GPIO19 (PWM)');
+      console.log('[HW TEST] Motor LEFT - DRV8833 AIN1=GPIO27, AIN2=GPIO26 (PWM)');
       ws.send(JSON.stringify({ 
         type: 'test_result', 
         test: 'motor_left', 
         success: true, 
         value: 180,
         unit: 'PWM',
-        pins: { in1: 18, in2: 19 },
+        pins: { ain1: 27, ain2: 26 },
         message: 'Motor Kiri OK - PWM 180, arah MAJU'
       }));
       break;
 
     case 'TEST_MOTOR_RIGHT':
-      console.log('[HW TEST] Motor RIGHT - DRV8833 IN3=GPIO21, IN4=GPIO22 (PWM)');
+      console.log('[HW TEST] Motor RIGHT - DRV8833 BIN1=GPIO25, BIN2=GPIO33 (PWM), STBY=GPIO23');
       ws.send(JSON.stringify({ 
         type: 'test_result', 
         test: 'motor_right', 
         success: true, 
         value: 180,
         unit: 'PWM',
-        pins: { in3: 21, in4: 22 },
+        pins: { bin1: 25, bin2: 33, stby: 23 },
         message: 'Motor Kanan OK - PWM 180, arah MAJU'
       }));
       break;
