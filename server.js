@@ -26,16 +26,134 @@ const MIME_TYPES = {
 };
 
 // =============================================================================
-// HTTP SERVER
+// HTTP SERVER & REST API (ESP32 Simulator)
 // =============================================================================
+let tcrtState = {
+  adc: 45,
+  putih: 15,
+  hitam: 185,
+  ambang: 100,
+  tcrtValid: true,
+  garisHitam: false
+};
+
+let motorState = {
+  mode: 'stop',
+  pwmKiri: 0,
+  pwmKanan: 0,
+  savedKiri: 255,
+  savedKanan: 244
+};
+
 const server = http.createServer((req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
   let pathname = parsedUrl.pathname;
 
+  // Set CORS headers for all responses
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+  };
+
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204, corsHeaders);
+    res.end();
+    return;
+  }
+
   // Health check
   if (pathname === '/health') {
-    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    res.writeHead(200, { 'Content-Type': 'application/json', ...corsHeaders });
     res.end(JSON.stringify({ status: 'ok', server: 'MazeBot EduKit' }));
+    return;
+  }
+
+  // REST API: GET /api/data
+  if (pathname === '/api/data' && req.method === 'GET') {
+    // fluctuate ADC slightly for realism
+    tcrtState.adc = tcrtState.garisHitam ? (tcrtState.hitam + Math.floor(Math.random() * 10 - 5)) : (tcrtState.putih + Math.floor(Math.random() * 10 - 5));
+    if (tcrtState.adc < 0) tcrtState.adc = 0;
+
+    const payload = {
+      depan: state.sensors.front_cm,
+      kiri: state.sensors.left_cm,
+      kanan: state.sensors.right_cm,
+      adc: tcrtState.adc,
+      putih: tcrtState.putih,
+      hitam: tcrtState.hitam,
+      ambang: tcrtState.ambang,
+      tcrtValid: tcrtState.tcrtValid,
+      garisHitam: tcrtState.garisHitam,
+      mode: motorState.mode,
+      pwmKiri: motorState.pwmKiri,
+      pwmKanan: motorState.pwmKanan,
+      savedKiri: motorState.savedKiri,
+      savedKanan: motorState.savedKanan
+    };
+    res.writeHead(200, { 'Content-Type': 'application/json', ...corsHeaders });
+    res.end(JSON.stringify(payload));
+    return;
+  }
+
+  // REST API: POST /api/drive
+  if (pathname === '/api/drive') {
+    const mode = parsedUrl.searchParams.get('mode') || 'stop';
+    const l = parseInt(parsedUrl.searchParams.get('l')) || motorState.savedKiri;
+    const r = parseInt(parsedUrl.searchParams.get('r')) || motorState.savedKanan;
+    motorState.mode = mode;
+    motorState.pwmKiri = (mode === 'stop') ? 0 : l;
+    motorState.pwmKanan = (mode === 'stop') ? 0 : r;
+    console.log(`[REST Drive] mode=${mode}, L=${l}, R=${r}`);
+    res.writeHead(200, { 'Content-Type': 'application/json', ...corsHeaders });
+    res.end(JSON.stringify({ ok: true, mode: motorState.mode }));
+    return;
+  }
+
+  // REST API: POST /api/stop
+  if (pathname === '/api/stop') {
+    motorState.mode = 'stop';
+    motorState.pwmKiri = 0;
+    motorState.pwmKanan = 0;
+    console.log('[REST Stop]');
+    res.writeHead(200, { 'Content-Type': 'application/json', ...corsHeaders });
+    res.end(JSON.stringify({ ok: true, mode: 'stop' }));
+    return;
+  }
+
+  // REST API: POST /api/save
+  if (pathname === '/api/save') {
+    const l = parseInt(parsedUrl.searchParams.get('l')) || 255;
+    const r = parseInt(parsedUrl.searchParams.get('r')) || 244;
+    motorState.savedKiri = l;
+    motorState.savedKanan = r;
+    console.log(`[REST Save PWM] L=${l}, R=${r}`);
+    res.writeHead(200, { 'Content-Type': 'application/json', ...corsHeaders });
+    res.end(JSON.stringify({ ok: true, savedKiri: l, savedKanan: r }));
+    return;
+  }
+
+  // REST API: POST /api/tcrt/putih
+  if (pathname === '/api/tcrt/putih') {
+    tcrtState.putih = tcrtState.adc;
+    tcrtState.ambang = Math.floor((tcrtState.putih + tcrtState.hitam) / 2);
+    tcrtState.tcrtValid = Math.abs(tcrtState.hitam - tcrtState.putih) >= 20;
+    const pesan = `Sampel PUTIH tercatat (${tcrtState.putih}). Ambang: ${tcrtState.ambang}`;
+    console.log(`[REST TCRT Putih] ${pesan}`);
+    res.writeHead(200, { 'Content-Type': 'application/json', ...corsHeaders });
+    res.end(JSON.stringify({ ok: true, pesan, tcrtValid: tcrtState.tcrtValid }));
+    return;
+  }
+
+  // REST API: POST /api/tcrt/hitam
+  if (pathname === '/api/tcrt/hitam') {
+    tcrtState.hitam = tcrtState.adc;
+    tcrtState.ambang = Math.floor((tcrtState.putih + tcrtState.hitam) / 2);
+    tcrtState.tcrtValid = Math.abs(tcrtState.hitam - tcrtState.putih) >= 20;
+    const pesan = `Sampel HITAM tercatat (${tcrtState.hitam}). Ambang: ${tcrtState.ambang}`;
+    console.log(`[REST TCRT Hitam] ${pesan}`);
+    res.writeHead(200, { 'Content-Type': 'application/json', ...corsHeaders });
+    res.end(JSON.stringify({ ok: true, pesan, tcrtValid: tcrtState.tcrtValid }));
     return;
   }
 
